@@ -1,0 +1,4 @@
+/build
+/bin/debug/*.exe
+/bin/debug/*.ilk
+/bin/debug/*.pdb
