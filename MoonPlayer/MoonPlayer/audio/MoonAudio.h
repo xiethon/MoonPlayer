@@ -1,13 +1,16 @@
 #pragma once
 #include <iostream>
-#include "MoonAudioCoderPrivate.h"
+
+class MoonAudioCoderPrivate;
 
 class MoonAudio
 {
 public:
 	MoonAudio();
 	~MoonAudio();
+	void clear();
+	void close();
 
-	MoonAudioCoderPrivate* coder;
+	MoonAudioCoderPrivate* p;
 };
 

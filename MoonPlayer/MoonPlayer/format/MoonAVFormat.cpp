@@ -1,17 +1,23 @@
 #include "MoonAVFormat.h"
-
-
+#include "MoonAVFormatPrivate.h"
+#include "MoonAVPacketPrivate.h"
+#include "../audio/MoonAudioCoderPrivate.h"
+#include "../video/MoonVideoCoderPrivate.h"
+#include "../Moon.h"
 
 #include <QDebug>
+
+static double r2d(AVRational r)
+{
+    return r.den == 0 ? 0 : (double)r.num / (double)r.den;
+}
 
 
 MoonAVFormat::MoonAVFormat()
 {
     p = new MoonAVFormatPrivate();
-   
     av_register_all();
     avformat_network_init();
-
     p->formatCtx = avformat_alloc_context();
 }
 
@@ -63,10 +69,11 @@ int MoonAVFormat::getVideoCodec(MoonVideo* video)
         int ret = avcodec_open2(ac, 0, 0);
         if (ret != 0)
         {
+            avcodec_free_context(&video->p->codec);
             std::cout << "video avcodec_open2 error" << std::endl;
             return -1;
         }
-        video->coder->coder = ac;
+        video->p->codec = ac;
         return 0;
     }
 }
@@ -97,7 +104,7 @@ int MoonAVFormat::getAudioCodec(MoonAudio* audio)
             std::cout << "video avcodec_open2 error" << std::endl;
             return -1;
         }
-        audio->coder->coder = ac;
+        audio->p->codec = ac;
         return 0;
     }
 }
@@ -109,10 +116,15 @@ int MoonAVFormat::close()
     return 0;
 }
 
+void MoonAVFormat::clear()
+{
+    avformat_flush(p->formatCtx);
+}
+
 //读取视频
 int MoonAVFormat::read(MoonAVPacket* packet)
 {
-    if (p->formatCtx == nullptr)
+    if (p->formatCtx == nullptr || packet == nullptr)
     {
         return -1;
     }
@@ -122,14 +134,40 @@ int MoonAVFormat::read(MoonAVPacket* packet)
     int ret = av_read_frame(p->formatCtx, pkt);
     if (ret == 0)
     {
+        pkt->pts = pkt->pts * (1000 * (r2d(p->formatCtx->streams[pkt->stream_index]->time_base)));  //单位转换为ms
+        pkt->dts = pkt->dts * (1000 * (r2d(p->formatCtx->streams[pkt->stream_index]->time_base)));  //单位转换为ms
         packet->p->packet = pkt;
+       
+        if (packet->p->packet->stream_index == getVideoStreamIndex())
+        {
+            packet->setStreamType(MoonAVStreamType::STREAM_TYPE_VIDEO);
+        }
+        else if (packet->p->packet->stream_index == getAudioStreamIndex())
+        {
+            packet->setStreamType(MoonAVStreamType::STREAM_TYPE_AUDIO);
+        }
+        else 
+        {
+            packet->setStreamType(MoonAVStreamType::STREAM_TYPE_UNKNOW);
+        }
+        return 0;
     }
-    return ret;
+    else 
+    {
+        av_packet_free(&pkt);
+        return -1;
+    }
+}
+
+//设置播放位置
+int MoonAVFormat::seek(double pos)					
+{
+    return av_seek_frame(p->formatCtx, getVideoStreamIndex(), pos, AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_FRAME);
 }
 
 double MoonAVFormat::getDuration()
 {
-    return p->formatCtx->duration / 1000000;
+    return p->formatCtx->duration / (AV_TIME_BASE / 1000);
 }
 
 //获取音频流 stream index

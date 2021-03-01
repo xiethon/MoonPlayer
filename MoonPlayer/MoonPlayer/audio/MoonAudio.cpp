@@ -1,14 +1,32 @@
 #include "MoonAudio.h"
+#include "MoonAudioCoderPrivate.h"
 
 MoonAudio::MoonAudio()
 {
-	coder = new MoonAudioCoderPrivate();
+	p = new MoonAudioCoderPrivate();
 }
+
 MoonAudio::~MoonAudio()
 {
-	if (coder != nullptr)
+	if (p != nullptr)
 	{
-		delete coder;
-		coder = nullptr;
+		delete p;
+		p = nullptr;
+	}
+}
+
+//ÇåÀíAudio
+void MoonAudio::clear()
+{
+	if (p)
+		avcodec_flush_buffers(p->codec);
+}
+
+void MoonAudio::close()
+{
+	if (p)
+	{
+		avcodec_close(p->codec);
+		avcodec_free_context(&p->codec);
 	}
 }

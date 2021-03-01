@@ -9,6 +9,6 @@ extern "C" {
 class MoonAudioCoderPrivate
 {
 public:
-    AVCodecContext* coder = nullptr;
+    AVCodecContext* codec = nullptr;
 };
 

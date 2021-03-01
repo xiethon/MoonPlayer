@@ -1,4 +1,5 @@
 #include "MoonAVPacket.h"
+#include "MoonAVPacketPrivate.h"
 
 MoonAVPacket::MoonAVPacket()
 {
@@ -7,7 +8,6 @@ MoonAVPacket::MoonAVPacket()
     p->packet = av_packet_alloc();
     av_init_packet(p->packet);
 }
-
 
 MoonAVPacket::~MoonAVPacket()
 {

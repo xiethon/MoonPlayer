@@ -1,9 +1,10 @@
 #pragma once
 #include <iostream>
-#include "MoonAVFormatPrivate.h"
 #include "../video/MoonVideo.h"
 #include "../audio/MoonAudio.h"
 #include "MoonAVPacket.h"
+
+class MoonAVFormatPrivate;
 
 class MoonAVFormat
 {
@@ -14,6 +15,9 @@ public:
 	int open(std::string url);
 	int read(MoonAVPacket* packet);
 	int close();
+	void clear();
+	int seek(double pos);					//…Ë÷√≤•∑≈Œª÷√
+
 	double getDuration();
 
 	int getAudioStreamIndex();

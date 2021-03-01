@@ -1,13 +1,19 @@
 #pragma once
 #include <iostream>
-#include "MoonVideoCoderPrivate.h"
+#include "../format/MoonAVPacket.h"
+#include "../format/MoonAVFrame.h"
 
+class MoonVideoCoderPrivate;
 class MoonVideo
 {
 public:
 	MoonVideo();
 	~MoonVideo();
+	void clear();
+	void close();
+	int send(MoonAVPacket* packet);
+	int recv(MoonAVFrame* frame);
 
-	MoonVideoCoderPrivate* coder;
+	MoonVideoCoderPrivate* p;
 };
 

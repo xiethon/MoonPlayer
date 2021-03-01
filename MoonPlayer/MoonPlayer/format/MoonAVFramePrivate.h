@@ -6,9 +6,9 @@ extern "C" {
 }
 
 
-class MoonVideoCoderPrivate
+class MoonAVFramePrivate
 {
 public:
-    AVCodecContext* codec = nullptr;
+    AVFrame* frame = nullptr;
 };
 
