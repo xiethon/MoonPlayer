@@ -1,13 +1,13 @@
-extern "C" {
-	#include "libavformat/avformat.h"
-	#include "libavcodec/avcodec.h"
-	#include "libswscale/swscale.h"
-	#include "libswresample/swresample.h"
-}
-#include <stdio.h>
+#include <QApplication>
+#include "PlayerWidget.h"
 
-int main()
+int main(int argc, char* argv[])
 {
-	av_register_all();//³õÊ¼»¯·â×°¿â
-	return 0;
+    QApplication app(argc, argv);
+
+    PlayerWidget p;
+
+    p.show();
+
+    return app.exec();
 }
