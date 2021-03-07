@@ -13,7 +13,8 @@ public:
 	void close();
 	int send(MoonAVPacket* packet);
 	int recv(MoonAVFrame* frame);
-
+	int getHeight();
+	int getWidth();
 	MoonVideoCoderPrivate* p;
 };
 

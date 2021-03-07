@@ -30,10 +30,17 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QOpenGLWidget" name="openGLWidget"/>
+    <widget class="PlayerGLWidget" name="openGLWidget"/>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlayerGLWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>PlayerGLWidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

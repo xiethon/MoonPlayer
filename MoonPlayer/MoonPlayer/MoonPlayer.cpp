@@ -1,7 +1,8 @@
 #include "MoonPlayer.h"
 #include "Moon.h"
 #include <QDebug>
-
+#include "../PlayerWidget.h"
+#include <QThread>
 
 MoonPlayer::MoonPlayer()
 {
@@ -67,6 +68,7 @@ int MoonPlayer::open(std::string url)
 	return ret;
 }
 
+extern PlayerWidget* g_player;
 int MoonPlayer::start()
 {
 	MoonAVPacket* packet = new MoonAVPacket();
@@ -85,15 +87,27 @@ int MoonPlayer::start()
 		{
 			std::cout << "Í¼Ïñ" << std::endl;
 			//todo Í¼Ïñpacket½âÂë
-			video->send(packet);
-			MoonAVFrame* frame = new MoonAVFrame();
-			video->recv(frame);
+			if (video->send(packet) == 0)
+			{
+				MoonAVFrame* frame = new MoonAVFrame();
+				while (1)
+				{
+					if (video->recv(frame) == 0)
+					{
+						qDebug() << "recv frame";
+						g_player->repaint(frame);
+						break;
+					}
+					QThread::msleep(10);
+				}
+			}
 		}
 		else if (type == MoonAVStreamType::STREAM_TYPE_AUDIO)
 		{
 			std::cout << "ÒôÆµ" << std::endl;
 			//todo Í¼Ïñpacket½âÂë
 		}
+		//av_packet_free(packet->p->packet);
 		
 	}
 	
@@ -161,4 +175,13 @@ int MoonPlayer::seek(double pos)
 	int ret = format->seek(seekPos);
 	mux.unlock();
 	return ret;
+}
+
+int MoonPlayer::getVideoHeight()
+{
+	return video->getHeight();
+}
+int MoonPlayer::getVideoWidth()
+{
+	return video->getWidth();
 }

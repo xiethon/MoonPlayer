@@ -21,8 +21,10 @@ public:
 
 	int getVideoDecode(MoonVideo* video);	//获取视频解码器
 	int getAudioDecode(MoonAudio* audio);	//获取音频解码器
-
+	int getVideoHeight();
+	int getVideoWidth();
 	double getDuration() { return totalMs; }	//获取总时长
+
 
 private:
 	int  read(MoonAVPacket* packet);	//读取流
@@ -35,6 +37,8 @@ private:
 	MoonVideo* video;
 	MoonAudio* audio;
 	double totalMs;
+	int width = 0;
+	int height = 0;
 	
 };
 

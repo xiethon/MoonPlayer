@@ -5,7 +5,7 @@
 #include "PlayerControlWidget.h"
 #include "ui_PlayerWidget.h"
 #include "MoonPlayer/MoonPlayer.h"
-
+class MoonAVFrame;
 namespace Ui {
 class PlayerWidget;
 }
@@ -17,8 +17,8 @@ class PlayerWidget : public QWidget
 public:
     explicit PlayerWidget(QWidget *parent = nullptr);
     ~PlayerWidget();
-   
-
+    MoonPlayer player;
+    void repaint(MoonAVFrame* frame);
 public slots:
     void start();
     void open(QString url);
@@ -31,8 +31,8 @@ private:
     void initConnect();
 
 private:
-    MoonPlayer player;
-    Ui::PlayerWidget*ui = nullptr;
+    
+    Ui::PlayerWidget *ui = nullptr;
     PlayerControlWidget* pPlayerControlWidget = nullptr;
 };
 

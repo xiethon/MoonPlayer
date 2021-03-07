@@ -43,7 +43,6 @@ int MoonVideo::send(MoonAVPacket* pkt)
 	}
 	int ret = avcodec_send_packet(p->codec, pkt->p->packet);
 	av_packet_free(&pkt->p->packet);
-	
 	return ret;
 }
 
@@ -62,10 +61,22 @@ int MoonVideo::recv(MoonAVFrame* frame)
 	int ret = avcodec_receive_frame(p->codec, frame->p->frame);
 	if (ret != 0)
 	{
+		char buf[1024] = { 0 };
+		av_strerror(ret, buf, sizeof(buf) - 1);
+//		std::cout << "avcodec_send_packet  failed! :" << buf << std::endl;
 		av_frame_free(&frame->p->frame);
 		return -1;
 	}
 
 	std::cout << "VideoFrameLineSize:" << frame->p->frame->linesize[0] << std::endl;
 	return 0;
+}
+
+int MoonVideo::getHeight()
+{
+	return p->codec->height;
+}
+int MoonVideo::getWidth()
+{
+	return p->codec->width;
 }

@@ -1,7 +1,13 @@
 #include "PlayerWidget.h"
+#include "MoonPlayer/format/MoonAVFormat.h"
+#include "MoonPlayer/format/MoonAVPacket.h"
+#include "PlayerGLWidget.h"
+#include "MoonPlayer/video/MoonVideo.h"
+#include "MoonPlayer/audio/MoonAudio.h"
 
 #include <QCoreApplication>
 #include <qDebug>
+
 
 PlayerWidget::PlayerWidget(QWidget *parent) :
     QWidget(parent),
@@ -9,9 +15,13 @@ PlayerWidget::PlayerWidget(QWidget *parent) :
 {
     initUi();
     initConnect();
-   
-    QString url = QCoreApplication::applicationDirPath() + "/test.mp4";
-    open(url);
+
+	QString url = QCoreApplication::applicationDirPath() + "/test.mp4";
+//	open(url);
+//	ui->openGLWidget->Init(player.getVideoWidth(), player.getVideoHeight());
+	
+
+    
 }
 
 PlayerWidget::~PlayerWidget()
@@ -20,10 +30,14 @@ PlayerWidget::~PlayerWidget()
 }
 
 
+void PlayerWidget::repaint(MoonAVFrame* frame)
+{
+    ui->openGLWidget->repaint(frame);
+}
 
 void PlayerWidget::start()
 {
-    player.start();
+    //player.start();
 }
 
 void PlayerWidget::open(QString url)
@@ -45,7 +59,7 @@ void PlayerWidget::initUi()
     show();
 
     pPlayerControlWidget = new PlayerControlWidget(ui->openGLWidget);
-    QRect playerControlRect = QRect(0, ui->openGLWidget->height() - 40, ui->openGLWidget->width(), 40);
+    QRect playerControlRect = QRect(0, 0, 100, 40);
     pPlayerControlWidget->setGeometry(playerControlRect);
     pPlayerControlWidget->show();
 }
@@ -57,10 +71,10 @@ void PlayerWidget::initConnect()
 
 void PlayerWidget::resizeEvent(QResizeEvent* event)
 {
-    if (pPlayerControlWidget != nullptr)
+    /*if (pPlayerControlWidget != nullptr)
     {
         QRect playerControlRect = QRect(0, ui->openGLWidget->height() - 40, ui->openGLWidget->width(), 40);
         pPlayerControlWidget->setGeometry(playerControlRect);
         pPlayerControlWidget->show();
-    }
+    }*/
 }
