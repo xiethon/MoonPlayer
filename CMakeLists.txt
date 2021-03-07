@@ -5,6 +5,7 @@ project ( MoonPlayer )
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH    ${PROJECT_SOURCE_DIR}/bin)
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include/ffmpeg)
-link_directories( ${CMAKE_CURRENT_SOURCE_DIR}/lib/ffmpeg)
+link_directories( ${CMAKE_CURRENT_SOURCE_DIR}/3rdPart/ffmpeg/lib)
+
 add_subdirectory (MoonPlayer)
+add_subdirectory (MoonPlayerClient)
