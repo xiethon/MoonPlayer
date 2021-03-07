@@ -12,7 +12,7 @@
 #include <QTime>
 #include <QDebug>
 #include "Shader.h"
-class MoonAVFrame;
+
 class PlayerGLWidget :public QOpenGLWidget
 {
     Q_OBJECT
@@ -21,8 +21,10 @@ public:
     PlayerGLWidget(QWidget* parent=nullptr);
     ~PlayerGLWidget();
 
-    void Init(int width, int height);
-    void repaint(MoonAVFrame* frame);
+//    void init(int width, int height);
+
+public slots:
+    void repaint();
 
 protected:
     virtual void initializeGL();

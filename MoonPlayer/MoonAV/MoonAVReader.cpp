@@ -96,7 +96,6 @@ namespace Moon
         }
 
         avformat_find_stream_info(p->formatCtx, NULL);
-
         av_dump_format(p->formatCtx, 0, p->url.c_str(), 0);
 
         return 0;

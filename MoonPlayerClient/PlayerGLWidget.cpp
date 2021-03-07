@@ -10,9 +10,7 @@ FILE* fp = NULL;
 
 PlayerGLWidget::PlayerGLWidget(QWidget* parent):QOpenGLWidget(parent)
 {
-    this->setWindowTitle("LearnOpenGL");
-
-	
+    
 }
 
 PlayerGLWidget::~PlayerGLWidget()
@@ -24,14 +22,56 @@ PlayerGLWidget::~PlayerGLWidget()
 	}
 }
 
-void PlayerGLWidget::repaint(MoonAVFrame* frame)
+void PlayerGLWidget::repaint()
 {
+	///分配材质内存空间
+	if (datas[0])
+	{
+		delete datas[0];
+	}
+	if (datas[1])
+	{
+		delete datas[1];
+	}
+	if (datas[2])
+	{
+		delete datas[2];
+	}
+	datas[0] = new unsigned char[width * height];		//Y
+	datas[1] = new unsigned char[width * height / 4];	//U
+	datas[2] = new unsigned char[width * height / 4];	//V
+	if (feof(fp))
+	{
+		fseek(fp, 0, SEEK_SET);
+	}
+	fread(datas[0], 1, width * height, fp);
+	fread(datas[1], 1, width * height / 4, fp);
+	fread(datas[2], 1, width * height / 4, fp);
+	core->glActiveTexture(GL_TEXTURE0);
+	core->glBindTexture(GL_TEXTURE_2D, texs[0]); //0层绑定到Y材质
+										   //修改材质内容(复制内存内容)
+	core->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, datas[0]);
+	//与shader uni遍历关联
+	//core->glUniform1i(unis[0], 0);
+	m_pShader->setInt("tex_y", 0);
 
-}
+	core->glActiveTexture(GL_TEXTURE0 + 1);
+	core->glBindTexture(GL_TEXTURE_2D, texs[1]); //1层绑定到U材质
+										   //修改材质内容(复制内存内容)
+	core->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width / 2, height / 2, GL_RED, GL_UNSIGNED_BYTE, datas[1]);
+	//与shader uni遍历关联
+	//core->glUniform1i(unis[1], 1);
+	m_pShader->setInt("tex_u", 1);
 
-void PlayerGLWidget::Init(int width, int height)
-{
-
+	core->glActiveTexture(GL_TEXTURE0 + 2);
+	core->glBindTexture(GL_TEXTURE_2D, texs[2]); //2层绑定到V材质
+										   //修改材质内容(复制内存内容)
+	core->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width / 2, height / 2, GL_RED, GL_UNSIGNED_BYTE, datas[2]);
+	//与shader uni遍历关联
+	//core->glUniform1i(unis[2], 2);
+	m_pShader->setInt("tex_v", 2);
+	
+	update();
 }
 
 void PlayerGLWidget::initializeGL()
@@ -109,11 +149,6 @@ void PlayerGLWidget::initializeGL()
 	core->glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width / 2, height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 	
 	core->glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	
-	///分配材质内存空间
-	datas[0] = new unsigned char[width * height];		//Y
-	datas[1] = new unsigned char[width * height / 4];	//U
-	datas[2] = new unsigned char[width * height / 4];	//V
 
 	fp = fopen("C:\\Users\\DELL\\Desktop\\MoonPlayer\\bin\\debug\\out240x128.yuv", "rb");
 	if (!fp)
@@ -124,7 +159,7 @@ void PlayerGLWidget::initializeGL()
 
 	//启动定时器
 	QTimer* ti = new QTimer(this);
-	connect(ti, SIGNAL(timeout()), this, SLOT(update()));
+	connect(ti, SIGNAL(timeout()), this, SLOT(repaint()));
 	ti->start(40);
 }
 
@@ -132,41 +167,43 @@ void PlayerGLWidget::initializeGL()
 void PlayerGLWidget::resizeGL(int w, int h)
 {
     core->glViewport(0, 0, w, h);
+//	width = w;
+//	height = h;
 	qDebug() << "resizeGL " << w << ":" << h;
 }
 
 void PlayerGLWidget::paintGL()
 {
-	if (feof(fp))
+	/*if (feof(fp))
 	{
 		fseek(fp, 0, SEEK_SET);
 	}
 	fread(datas[0], 1, width * height, fp);
 	fread(datas[1], 1, width * height / 4, fp);
-	fread(datas[2], 1, width * height / 4, fp);
-	core->glActiveTexture(GL_TEXTURE0);
-	core->glBindTexture(GL_TEXTURE_2D, texs[0]); //0层绑定到Y材质
-										   //修改材质内容(复制内存内容)
-	core->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, datas[0]);
-	//与shader uni遍历关联
-	//core->glUniform1i(unis[0], 0);
-	m_pShader->setInt("tex_y", 0);
+	fread(datas[2], 1, width * height / 4, fp)*/;
+	//core->glActiveTexture(GL_TEXTURE0);
+	//core->glBindTexture(GL_TEXTURE_2D, texs[0]); //0层绑定到Y材质
+	//									   //修改材质内容(复制内存内容)
+	//core->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, datas[0]);
+	////与shader uni遍历关联
+	////core->glUniform1i(unis[0], 0);
+	//m_pShader->setInt("tex_y", 0);
 
-	core->glActiveTexture(GL_TEXTURE0 + 1);
-	core->glBindTexture(GL_TEXTURE_2D, texs[1]); //1层绑定到U材质
-										   //修改材质内容(复制内存内容)
-	core->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width / 2, height / 2, GL_RED, GL_UNSIGNED_BYTE, datas[1]);
-	//与shader uni遍历关联
-	//core->glUniform1i(unis[1], 1);
-	m_pShader->setInt("tex_u", 1);
+	//core->glActiveTexture(GL_TEXTURE0 + 1);
+	//core->glBindTexture(GL_TEXTURE_2D, texs[1]); //1层绑定到U材质
+	//									   //修改材质内容(复制内存内容)
+	//core->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width / 2, height / 2, GL_RED, GL_UNSIGNED_BYTE, datas[1]);
+	////与shader uni遍历关联
+	////core->glUniform1i(unis[1], 1);
+	//m_pShader->setInt("tex_u", 1);
 
-	core->glActiveTexture(GL_TEXTURE0 + 2);
-	core->glBindTexture(GL_TEXTURE_2D, texs[2]); //2层绑定到V材质
-										   //修改材质内容(复制内存内容)
-	core->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width / 2, height / 2, GL_RED, GL_UNSIGNED_BYTE, datas[2]);
-	//与shader uni遍历关联
-	//core->glUniform1i(unis[2], 2);
-	m_pShader->setInt("tex_v", 2);
+	//core->glActiveTexture(GL_TEXTURE0 + 2);
+	//core->glBindTexture(GL_TEXTURE_2D, texs[2]); //2层绑定到V材质
+	//									   //修改材质内容(复制内存内容)
+	//core->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width / 2, height / 2, GL_RED, GL_UNSIGNED_BYTE, datas[2]);
+	////与shader uni遍历关联
+	////core->glUniform1i(unis[2], 2);
+	//m_pShader->setInt("tex_v", 2);
 
 	core->glBindVertexArray(VAO);
 	core->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

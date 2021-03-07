@@ -15,7 +15,8 @@ file( GLOB header_list *.h )
 #源文件路径
 file( GLOB source_list *.cpp )
 
-add_executable(${PROJECT_NAME} ${header_list} ${source_list})
+#add_executable(${PROJECT_NAME} ${header_list} ${source_list})
+add_library(${PROJECT_NAME} ${header_list} ${source_list})
 
 #链接 ffmpeg
 target_link_libraries(${PROJECT_NAME} avformat)
