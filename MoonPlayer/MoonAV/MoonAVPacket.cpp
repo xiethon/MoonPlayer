@@ -42,7 +42,7 @@ namespace Moon
         return 0;
     }
 
-    int MoonAVPacket::getStreamId()
+    int MoonAVPacket::getStreamIndex()
     {
         return p->packet->stream_index;
     }

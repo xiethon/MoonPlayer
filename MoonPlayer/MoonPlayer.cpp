@@ -1,55 +1,58 @@
-#include "MoonAV/MoonAV.h"
+#include "MoonPlayer.h"
+#include "MoonPlayerPrivate.h"
 
-int main(void)
+namespace Moon
 {
-	Moon::MoonAVReader reader("C:\\Users\\DELL\\Desktop\\MoonPlayer\\bin\\debug\\test.mp4");
-	int ret = reader.open();
-	if (ret != 0){
-		return -1;
-	}
-	std::cout << "open success" << std::endl;
-
-	int streamCount = reader.getStreamCount();
-
-	Moon::MoonAVStream videoStream, audioStream;
-	reader.getStream(videoStream, 0);
-	reader.getStream(audioStream, 1);
-	
-	Moon::MoonAVDecoder* videoDecoder = new Moon::MoonAVDecoder();
-	videoDecoder->init(&videoStream);
-
-	Moon::MoonAVDecoder* audioDecoder = new Moon::MoonAVDecoder();
-	audioDecoder->init(&audioStream);
-	while (1)
+	MoonPlayer::MoonPlayer()
 	{
-		Moon::MoonAVPacket pkt;
-		ret = reader.read(&pkt);
-		if (ret)
-		{
-			break;
-		}
+		p = new MoonPlayerPrivate();
+	}
 
-		int streamIndex = pkt.getStreamId();
-		if (streamIndex == 0)
-		{
-			ret = videoDecoder->sendPacket(&pkt);
-			if(ret){
-				continue;
-			}
-			while(1)
-			{
-				Moon::MoonAVFrame frame;
-				ret = videoDecoder->recvFrame(&frame);
-				if(ret)
-				{
-					break;
-				}
-				frame.getInfo();
-			}
+	MoonPlayer::~MoonPlayer()
+	{
+		if (p != nullptr) {
+			delete p;
+			p = nullptr;
 		}
 	}
 
-	reader.close();
-	getchar();
-	return 0;
+	int MoonPlayer::open(std::string url)
+	{
+		p->url = url;
+
+		readerThread = new MoonPlayerReaderThread(url);
+		readerThread->start();
+		return 0;
+	}
+
+	int MoonPlayer::start()
+	{
+		return 0;
+	}
+
+	int MoonPlayer::play()
+	{
+		return 0;
+	}
+
+	int MoonPlayer::pause()
+	{
+		return 0;
+	}
+
+	int MoonPlayer::stop()
+	{
+		if (readerThread != nullptr) 
+		{
+			readerThread->stop();
+			delete readerThread;
+			readerThread = nullptr;
+		}
+		return 0;
+	}
+
+	int MoonPlayer::seek(double time)
+	{
+		return 0;
+	}
 }

@@ -18,14 +18,12 @@ namespace Moon
             return -1;
         }
 
-        stopFlag = 1;
+        setStoping();
         if(t != nullptr){
             t->join();
             delete t;
             t = nullptr;
         }
-        stopFlag = 0;
-
         return 0;
     }
 
@@ -41,7 +39,6 @@ namespace Moon
         }
 
         setRunning();
-        stopFlag = 0;
         t = new std::thread(&MoonThread::run, this);
 
         return 0;
@@ -55,6 +52,7 @@ namespace Moon
 
     void MoonThread::setStoping()
     {
+        stopFlag = 1;
         isRun = 0;
     }
 }

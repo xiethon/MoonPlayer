@@ -20,6 +20,7 @@ add_executable(${PROJECT_NAME} ${header_list} ${source_list})
 
 #链接 ffmpeg
 target_link_libraries(${PROJECT_NAME} MoonAV)
+target_link_libraries(${PROJECT_NAME} MoonThread)
 
 
 add_subdirectory (MoonAV)

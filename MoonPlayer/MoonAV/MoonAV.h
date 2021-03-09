@@ -79,7 +79,7 @@ namespace Moon
 		MoonAVPacket();
 		~MoonAVPacket();
 
-		int getStreamId();
+		int getStreamIndex();
 
 		uint64_t getPTS();
 		uint64_t getDTS();
